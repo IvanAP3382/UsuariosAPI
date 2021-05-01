@@ -21,6 +21,10 @@ namespace DataAccess
                 .IsRequired();
 
             modelBuilder.Entity<Usuario>()
+                .HasIndex(x => x.UserName)
+                .IsUnique();
+
+            modelBuilder.Entity<Usuario>()
                 .Property(x => x.Nombre)
                  .HasMaxLength(20)
                 .IsRequired(); 
@@ -32,7 +36,8 @@ namespace DataAccess
 
             modelBuilder.Entity<Usuario>()
                 .Property(x => x.Telefono)
-                .HasMaxLength(50);
+                .HasMaxLength(30)
+                .HasDefaultValue(null);
 
             modelBuilder.Entity<Usuario>()
                 .Property(x => x.Activo)
