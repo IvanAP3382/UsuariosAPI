@@ -8,8 +8,14 @@ namespace Common.DTO
 {
     public class ResponseDTO
     {
+        public ResponseDTO()
+        {
+            Success = true;
+        }
         public string Message { get; set; }
         public bool Success { get; set; }
         public object Result { get; set; }
+
+        
     }
 }

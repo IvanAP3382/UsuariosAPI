@@ -29,7 +29,7 @@ namespace UsuariosAPI.Controllers
         {
             return _usuarioService.GetAllUsuarios();
         }
-        [HttpGet("GetUsuario")]
+        [HttpPost("GetUsuario")]
         public object GetUsuario([FromBody] Guid idUsuarioBuscar)
         {
             return _usuarioService.GetUsuario(idUsuarioBuscar);
@@ -43,7 +43,7 @@ namespace UsuariosAPI.Controllers
         [HttpPost("DeleteUsuario")]
         public object DeleteUsuario([FromBody] UsuarioDTO usuarioDelete)
         {
-            return _usuarioService.UpdateUsuario(usuarioDelete);
+            return _usuarioService.DeleteUsuario(usuarioDelete);
         }
     }
 }

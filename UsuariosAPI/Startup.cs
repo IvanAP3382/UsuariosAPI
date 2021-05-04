@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace UsuariosAPI
 {
@@ -37,7 +38,7 @@ namespace UsuariosAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "UsuariosAPI", Version = "v1" });
             });
-            services.AddDbContext<UsuariosContext>();
+            services.AddDbContext<UsuariosContext>(options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
             services.AddScoped<IUsuariosRepository, UsuariosRepository>();
             services.AddScoped<IUsuariosService, UsuariosService>();
 

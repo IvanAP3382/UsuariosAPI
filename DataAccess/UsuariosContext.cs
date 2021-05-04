@@ -10,6 +10,9 @@ namespace DataAccess
 {
     public class UsuariosContext : DbContext
     {
+        public UsuariosContext(DbContextOptions<UsuariosContext> options) : base(options)
+        {
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Usuario>()
@@ -19,6 +22,10 @@ namespace DataAccess
                 .Property(x => x.UserName)
                 .HasMaxLength(20)
                 .IsRequired();
+
+            modelBuilder.Entity<Usuario>()
+                .HasIndex(x => x.UserName)
+                .IsUnique();
 
             modelBuilder.Entity<Usuario>()
                 .Property(x => x.Nombre)
@@ -32,15 +39,12 @@ namespace DataAccess
 
             modelBuilder.Entity<Usuario>()
                 .Property(x => x.Telefono)
-                .HasMaxLength(50);
+                .HasMaxLength(30)
+                .HasDefaultValue(null);
 
             modelBuilder.Entity<Usuario>()
                 .Property(x => x.Activo)
                 .HasDefaultValue(true);
-        }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("data source=localhost;initial catalog=ExamenTecnicoCOA;Integrated Security=true;");
         }
         public DbSet<Usuario> Usuarios { get; set; }
     }

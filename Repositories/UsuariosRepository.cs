@@ -20,29 +20,48 @@ namespace Repositories
         }
         public void CreateUsuario(UsuarioDTO usuarioCreate)
         {
-            _context.Add(new Usuario()
+            var usuarioEncontrado = _context.Usuarios.Where(x => x.IdUsuario == usuarioCreate.IdUsuario).FirstOrDefault();
+            if (usuarioEncontrado == null)
             {
-                IdUsuario = usuarioCreate.IdUsuario,
-                UserName = usuarioCreate.UserName,
-                Nombre = usuarioCreate.Nombre,
-                Telefono = usuarioCreate.Telefono,
-                Email = usuarioCreate.Email
-            });
-            _context.SaveChanges();
+                _context.Add(new Usuario()
+                {
+                    IdUsuario = usuarioCreate.IdUsuario,
+                    UserName = usuarioCreate.UserName,
+                    Nombre = usuarioCreate.Nombre,
+                    Telefono = usuarioCreate.Telefono,
+                    Email = usuarioCreate.Email
+                });
+                _context.SaveChanges();
+            }
+            else if(usuarioEncontrado.Activo == false)
+            {
+                usuarioEncontrado.IdUsuario = usuarioCreate.IdUsuario;
+                usuarioEncontrado.UserName = usuarioCreate.UserName;
+                usuarioEncontrado.Nombre = usuarioCreate.Nombre;
+                usuarioEncontrado.Telefono = usuarioCreate.Telefono;
+                usuarioEncontrado.Email = usuarioCreate.Email;
+                usuarioEncontrado.Activo = true;
+                _context.Update(usuarioEncontrado);
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new UsuariosException($"Ya existe un usuario con IdUsuario \"{usuarioCreate.IdUsuario}\"");
+            }
+            
         }
         public List<UsuarioDTO> GetAllUsuarios()
         {
             var response = new List<UsuarioDTO>();
-            List<UsuarioDTO> listaEncontrada = _context.Usuarios.Select(x => new UsuarioDTO()
+            List<UsuarioDTO> listaEncontrada = _context.Usuarios.Where(x => x.Activo == true).Select(x => new UsuarioDTO()
             {
                 IdUsuario = x.IdUsuario,
                 UserName = x.UserName,
                 Nombre = x.Nombre,
                 Telefono = x.Telefono,
-                Email = x.Email,
-
+                Email = x.Email
             }).ToList();
-            if (listaEncontrada != null)
+            if (listaEncontrada != null && listaEncontrada.Count != 0)
             {
                 response = listaEncontrada;
             }
@@ -55,7 +74,7 @@ namespace Repositories
         public UsuarioDTO GetUsuario(Guid idUsuario)
         {
             UsuarioDTO response = new UsuarioDTO();
-            var usuarioEncontrado = _context.Usuarios.Where(x => x.IdUsuario == idUsuario).FirstOrDefault();
+            var usuarioEncontrado = _context.Usuarios.Where(x => x.IdUsuario == idUsuario && x.Activo == true).FirstOrDefault();
             if (usuarioEncontrado != null)
             {
                 response = new UsuarioDTO()
@@ -76,7 +95,7 @@ namespace Repositories
         }
         public void UpdateUsuario(UsuarioDTO usuarioUpdate)
         {
-            var usuarioEncontrado = _context.Usuarios.Where(x => x.IdUsuario == usuarioUpdate.IdUsuario).FirstOrDefault();
+            var usuarioEncontrado = _context.Usuarios.Where(x => x.IdUsuario == usuarioUpdate.IdUsuario && x.Activo == true).FirstOrDefault();
 
             if (usuarioEncontrado != null)
             {
@@ -95,12 +114,13 @@ namespace Repositories
         }
         public void DeleteUsuario(UsuarioDTO usuarioDelete)
         {
-            var usuarioEncontrado = _context.Usuarios.Where(x => x.IdUsuario == usuarioDelete.IdUsuario).FirstOrDefault();
+            var usuarioEncontrado = _context.Usuarios.Where(x => x.IdUsuario == usuarioDelete.IdUsuario && x.Activo == true).FirstOrDefault();
 
             if (usuarioEncontrado != null)
             {
                 usuarioEncontrado.Activo = false;
                 _context.Update(usuarioEncontrado);
+                _context.SaveChanges();
             }
             else
             {
